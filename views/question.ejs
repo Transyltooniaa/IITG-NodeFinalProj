@@ -244,11 +244,6 @@
         </div>
      <% }); %>
 
-
-
-
-
-
   
     
       <!-- Initialize Quill editor -->
@@ -279,7 +274,6 @@
             document.getElementById('editor-container').style.display = 'block';
             document.getElementById('get-html').style.display = 'block';
             document.getElementById('editor').style.display = 'block';
-            document.querySelector('.container-ans').classList.add('hidden');
 
         });
 
@@ -289,7 +283,6 @@
             document.getElementById('editor-container').style.display = 'none';
             document.getElementById('get-html').style.display = 'none';
             document.getElementById('editor').style.display = 'none';
-            document.querySelector('.container-ans').classList.remove('hidden');
 
             (async () => {
                 const response = await fetch('/api/answers/<%= question._id %>/', {

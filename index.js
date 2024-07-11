@@ -50,8 +50,6 @@ app.get('/question/:id', async(req, res) => {
     const answerResponse = await fetch(`http://localhost:3000/api/answers/${questionId}`);
     const data = await response.json();
     const answerData = await answerResponse.json();
-    console.log(data);
-    console.log(answerData);
     res.render('question', { question: data , answers: answerData});
 });
 
