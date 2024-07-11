@@ -10,6 +10,7 @@ const questionSchema = new mongoose.Schema({
     description: {
         type: String,
         required: [true, 'Please enter a description'],
+        maxLength: [500, 'Description cannot be more than 500 characters'],
         trim: true
     },
     user: {
@@ -44,7 +45,6 @@ const questionSchema = new mongoose.Schema({
     toJSON: { virtuals: true },
     toObject: { virtuals: true }
 });
-
 
 // Virtual for answers related to the question
 questionSchema.virtual('answers', {

@@ -1,0 +1,69 @@
+<%- include('partials/header'); -%>
+
+<form action="/api/questions" id="questionForm">
+    <h2>Ask a Question</h2>
+    <label for="title">Title</label>
+    <input type="text" id="title" name="title" required>
+
+    <label for="description">Description</label>
+    <textarea id="description" name="description" rows="4" maxlength="500" required></textarea>
+
+    <label for="tags">Tags (comma separated)</label>
+    <input type="text" id="tags" name="tags" required>
+
+    <button type="submit">Post Question</button>
+    <div class="error" id="error"></div>
+</form>
+
+<script>
+document.getElementById('questionForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const errorDiv = document.getElementById('error');
+    errorDiv.textContent = '';
+
+    const title = document.getElementById('title').value.trim();
+    const description = document.getElementById('description').value.trim();
+    const tags = document.getElementById('tags').value.trim().split(',');
+
+    if (!title || !description || tags.length === 0) {
+        errorDiv.textContent = 'Please fill out all fields and provide at least one tag.';
+        return;
+    }
+
+    const questionData = {
+        title,
+        description,
+        tags
+    };
+
+    try {
+        const response = await fetch('/api/questions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(questionData)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to post question');
+        }
+
+        const responseData = await response.json();
+        console.log(responseData);
+
+        // Redirect to the home page
+        location.assign('/');
+
+        // Clear the form
+        document.getElementById('questionForm').reset();
+    } catch (error) {
+        console.error(error);
+        errorDiv.textContent = error.message || 'Failed to post question';
+    }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,404 @@
+<%- include('partials/header'); -%>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+
+   
+    .container-ques, .container-ans{
+        width : 90%;
+        margin : 8px auto;
+        padding : 10px;
+        margin-bottom: 30px;
+      
+    }
+    .question, .answer {
+        background: white;
+        padding: 20px;
+        margin: 10px auto;
+        border-radius: 5px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        width : 90%;
+    }
+
+    .tags {
+        margin-top: 10px;
+        font-size: 0.9em;
+        color: #666;
+    }
+
+    .wrapper {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .custom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .edit, .delete {
+        margin: 10px;
+    }
+    
+    .custom-ans {
+        display: flex;
+        justify-content: space-between;
+        align-items:start;
+        position: relative;
+        bottom: 20px;
+    }   
+
+    #editor {
+        height: 375px;
+        width: 90%;
+        margin: 0 auto;
+        background-color: white;
+
+    }
+
+    #toolbar-container {
+        display: block;
+        width: 90%;
+        margin: 0 auto;
+        background-color: #f3f3f3;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        padding: 10px;
+        border-radius: 5px;
+        align-items: center;
+
+    }
+
+    .hidden {
+        display: none;
+    }
+
+
+
+</style>
+</head>
+<body>
+
+
+
+
+
+
+
+    <!-- question -->
+    <div class="container-ques">
+        <div class="question" id="question1">
+            <div class="question">
+                <div class="wrapper">
+                    <div class="username">
+                        <p><%= question.user.username %></p>
+                    </div>
+                    <button class="btn">Answer ? </button>                        
+                    <div class="custom ">
+                    <% if (user) { %>
+                        <% if (user) { %>
+                            <% if (user._id.toString() === question.user._id.toString()) { %>
+                                <div class="delete">
+                                    <button>Delete</button>
+                                </div>
+                            <% } %>
+                        <% } %>
+                    <% } %>
+                    </div>
+                </div>
+                <div class="question-text">
+                    <h2><%= question.title %></h2>
+                </div>
+                <div class="description-short">
+                    <p><%= question.description %></p>
+                </div>
+            </div>
+            <div class="details" style= "width:90%;margin-left: 80px;">
+
+                <div class="createdAt">
+                    <p><%= new Date(question.createdAt).toLocaleDateString() %></p>
+                </div>
+
+                <div class="tags" style="display: flex; align-items: center;justify-content: center;">
+                    <% question.tags.forEach(tag => { %>
+                        <p><%= tag %></p>
+                    <% }); %>
+                </div>
+
+    
+                <div class="votes">
+                    <button class="upvote" style="position: relative; right: 20px; bottom:15px;">Upvote</button>
+                    <p><%= question.votes %></p>
+                </div>
+
+
+
+
+            </div>
+        </div>
+
+
+
+
+
+
+     <!-- Create a div container for the toolbar and editor -->
+     <div id="editor-container" class="hidden" >
+        <div id="toolbar-container">
+          <span class="ql-formats">
+            <select class="ql-font"></select>
+            <select class="ql-size"></select>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-bold"></button>
+            <button class="ql-italic"></button>
+            <button class="ql-underline"></button>
+            <button class="ql-strike"></button>
+          </span>
+          <span class="ql-formats">
+            <select class="ql-color"></select>
+            <select class="ql-background"></select>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-script" value="sub"></button>
+            <button class="ql-script" value="super"></button>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-header" value="1"></button>
+            <button class="ql-header" value="2"></button>
+            <button class="ql-blockquote"></button>
+            <button class="ql-code-block"></button>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-list" value="ordered"></button>
+            <button class="ql-list" value="bullet"></button>
+            <button class="ql-indent" value="-1"></button>
+            <button class="ql-indent" value="+1"></button>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-direction" value="rtl"></button>
+            <select class="ql-align"></select>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-link"></button>
+            <button class="ql-image"></button>
+            <button class="ql-video"></button>
+            <button class="ql-formula"></button>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-clean"></button>
+          </span>
+        </div>
+
+        <div id="editor" class="hidden"></div>
+
+
+        <button id="get-html" class="submit-editor" style="position:absolute;left: 45%;">Submit</button>
+
+
+      </div>
+   
+
+
+        <!-- answer -->
+        <% answers.reverse().forEach(answer => { %>
+        <div class="container-ans">
+                <div class="answer" style="background-color:beige; width: 100%;"> 
+                    <div class="answer"> 
+                        <div class="wrapper">
+                            <div class="username">
+                                <p><%- answer.author.username %></p>
+                            </div>
+                            <div class="custom custom-ans" >
+
+                            <% if (user) { %>
+                                <% if (user) { %>
+                                    <% if (user._id.toString() === answer.author._id.toString()) { %>
+                                        <div class="edit-ans">
+                                            <button>Edit</button>
+                                        </div>
+                                        <div class="delete-ans">
+                                            <button>Delete</button>
+                                        </div>
+                                    <% } %>
+                                <% } %>
+                            <% } %>
+                            </div>
+                        </div> 
+                        <div class="answer-content">
+                            <p>
+                                <%- answer.text %>
+                            </p>
+                        </div>
+                    </div>
+
+                        <div class="details" style="display: flex; justify-content: space-around; align-items: center; flex-direction: row-reverse;">
+                            <p><strong>Votes:</strong class="ans-votes-num"><%= answer.votes  %> </p>
+                            <button class="answer-upvote" style="position: relative; right: 20px; bottom:15px;">Upvote</button>
+                            <p><strong> <%= new Date(answer.createdAt).toLocaleDateString() %></strong></p>
+                        </div>
+                </div>  
+        </div>
+     <% }); %>
+
+
+
+
+
+
+  
+    
+      <!-- Initialize Quill editor -->
+      <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          console.log('DOM fully loaded and parsed');
+          
+          const options = {
+            debug: "info",
+            modules: {
+              syntax: true,
+              toolbar: '#toolbar-container',
+            },
+            placeholder: "Compose an epic...",
+            theme: "snow",
+          };
+  
+          const quill = new Quill("#editor", options);
+          console.log('Quill initialized');
+        });
+
+      </script>
+
+
+
+    <script>
+        document.querySelector('.btn').addEventListener('click', function() {
+            document.getElementById('editor-container').style.display = 'block';
+            document.getElementById('get-html').style.display = 'block';
+            document.getElementById('editor').style.display = 'block';
+            document.querySelector('.container-ans').classList.add('hidden');
+
+        });
+
+        document.querySelector('.submit-editor').addEventListener('click', function() {
+            const html = document.querySelector('.ql-editor').innerHTML;
+            console.log(html);
+            document.getElementById('editor-container').style.display = 'none';
+            document.getElementById('get-html').style.display = 'none';
+            document.getElementById('editor').style.display = 'none';
+            document.querySelector('.container-ans').classList.remove('hidden');
+
+            (async () => {
+                const response = await fetch('/api/answers/<%= question._id %>/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        text: html
+                    })
+                });
+
+                const data = await response.json();
+                console.log(data);
+            })();
+
+        });
+
+        let upvoted = false;
+        document.querySelector('.upvote').addEventListener('click', function() {
+            upvoted = !upvoted;
+
+            if(upvoted) {
+                document.querySelector('.upvote').style.backgroundColor = 'lime';
+                document.querySelector('.votes p').innerHTML = parseInt(document.querySelector('.votes p').innerHTML) + 1;
+            }
+            else {
+                upvoted = false;
+                document.querySelector('.upvote').style.backgroundColor = 'white';
+                document.querySelector('.votes p').innerHTML = parseInt(document.querySelector('.votes p').innerHTML) - 1;
+            }
+
+            (async () => {
+                const response = await fetch('/api/questions/<%= question._id %>', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        votes: parseInt(document.querySelector('.votes p').innerHTML)
+                    })
+                });
+
+                const data = await response.json();
+                console.log(data);
+            })();         
+        });
+
+        document.querySelector('.delete').addEventListener('click', function() {
+            (async () => {
+                const response = await fetch('/api/questions/<%= question._id %>', {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+                console.log(data);
+                window.location.href = '/';
+            })();
+        });
+
+        document.querySelectorAll('.answer-upvote').forEach((button, index) => {
+            button.addEventListener('click', function() {
+                let upvoted = false;
+                upvoted = !upvoted;
+
+                if(upvoted) {
+                    button.style.backgroundColor = 'lime';
+                    document.querySelectorAll('.ans-votes-num')[index].innerHTML = parseInt(document.querySelectorAll('.ans-votes-num')[index].innerHTML) + 1;
+                }
+                else {
+                    upvoted = false;
+                    button.style.backgroundColor = 'white';
+                    document.querySelectorAll('.ans-votes-num')[index].innerHTML = parseInt(document.querySelectorAll('.ans-votes-num')[index].innerHTML) - 1;
+                }
+
+                (async () => {
+                    const response = await fetch('/api/answers/<%= question._id %>', {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            votes: parseInt(document.querySelectorAll('.ans-votes-num')[index].innerHTML)
+                        })
+                    });
+
+                    const data = await response.json();
+                    console.log(data);
+                })();         
+            });
+        });
+
+        document.querySelectorAll('.delete-ans').forEach((button, index) => {
+            button.addEventListener('click', function() {
+                (async () => {
+                    const response = await fetch('/api/answers/<%= question._id %>', {
+                        method: 'DELETE'
+                    });
+
+                    const data = await response.json();
+                    console.log(data);
+                    window.location.href = '/';
+                })();
+            });
+        });
+
+        
+
+    </script>
+
+
+<%- include('partials/footer'); -%>

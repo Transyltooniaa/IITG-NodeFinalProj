@@ -1,25 +1,33 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const keys = require('../config'); 
+const keys = require('../config');
+const cookieParser = require('cookie-parser');
 
-const requireAuth = (req, res, next) => {
+const requireAuth = async (req, res, next) => {
   const token = req.cookies.jwt;
 
-  // check json web token exists & is verified
   if (token) {
-    jwt.verify(token,keys.jwtSecret, (err, decodedToken) => {
-      if (err) {
-        console.log(err.message);
-        res.redirect('/login');
-      } else {
-        console.log(decodedToken);
-        next();
+      try {
+          const decodedToken = jwt.verify(token, keys.jwtSecret);
+          const user = await User.findById(decodedToken.id);
+
+          if (!user) {
+              throw new Error('User not found');
+          }
+
+          req.user = user;
+          next();
+      } catch (err) {
+          console.log(err.message);
+          res.redirect('api/auth/login');
       }
-    });
   } else {
-    res.redirect('/login');
+      res.redirect('api/auth/login');
   }
 };
+
+
+
 
 // check current user
 const checkUser = (req, res, next) => {

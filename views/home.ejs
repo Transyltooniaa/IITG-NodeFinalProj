@@ -1,0 +1,59 @@
+<%- include('partials/header'); -%>
+
+
+  <div class="home-container">
+    <% questions.reverse().forEach(question => { %>
+
+    <a href="/question/<%= question._id %>">
+    <div class="question">
+
+      <div class="username">
+        <p><%= question.user.username %></p>
+      </div>
+
+      <div class="question-text">
+        <h2><%= question.title %></h2>
+      </div>
+
+      <div class="description-short">
+        <p><%= question.description %></p>
+      </div>
+
+      <div class="details">
+        <div class="createdAt">
+          <p><%= new Date(question.createdAt).toLocaleDateString() %></p>
+        </div>
+
+        <div class="tags">
+          <% question.tags.forEach(tag => { %>
+            <p><%= tag %></p>
+          <% }); %>
+        </div>
+
+        <div class="votes">
+          <p>Votes: <%= question.votes %></p>
+        </div>
+      </div>
+      </div>
+    </div>
+    <% }); %>
+  </div>
+</a>
+<%- include('partials/footer'); -%>
+
+<script>
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now - date);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) {
+      return "Today";
+    } else if (diffDays === 1) {
+      return "1 day ago";
+    } else {
+      return diffDays + " days ago";
+    }
+  }
+</script>

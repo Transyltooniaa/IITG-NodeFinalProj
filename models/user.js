@@ -35,19 +35,20 @@ const userSchema = new mongoose.Schema({
     },
     verified: { 
         type: Boolean,
-         default: false 
+        default: false 
     },
     otp: String
-},{
-    timestamps: true
+}, {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
 });
-
 
 // Virtual for user's questions
 userSchema.virtual('questions', {
     ref: 'Question',
     localField: '_id',
-    foreignField: 'author'
+    foreignField: 'user' // Corrected to 'user' to match the Question model
 });
 
 // Virtual for user's answers
@@ -76,7 +77,7 @@ userSchema.statics.login = async function(email, password) {
       throw Error('incorrect password');
     }
     throw Error('incorrect email');
-  };
+};
 
 const User = mongoose.model('User', userSchema);
 module.exports = User;

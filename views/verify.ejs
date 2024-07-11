@@ -1,0 +1,47 @@
+<%- include('partials/header'); -%>
+
+<form action="#">
+    <label for="verification">Enter OTP</label>
+    <input class="verification" type="number" name="verify" />
+    <div class="verification error"></div>
+    <button type="submit">Submit</button>
+</form>
+
+<%- include('partials/footer'); -%>
+
+<script>
+  const form = document.querySelector('form');
+  const verificationError = document.querySelector('.verification.error');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // reset errors
+    verificationError.textContent = '';
+
+    // get values
+    const otp = form.verify.value;
+    const email = localStorage.getItem('email');
+
+    try {
+      const res = await fetch('/api/auth/verify', { 
+        method: 'POST', 
+        body: JSON.stringify({ otp, email }),
+        headers: {'Content-Type': 'application/json'}
+      });
+
+      const data = await res.json();
+
+      if(res.status === 200) {
+        localStorage.removeItem('email');
+        location.assign('/'); // Redirect to home page or desired page after verification
+      } else {
+        verificationError.textContent = data.errors.verification || 'Unknown error occurred';
+      }
+      console.log(data);
+    } catch (err) {
+      console.log(err.message);
+      verificationError.textContent = 'An error occurred while verifying the OTP';
+    }
+  });
+</script>

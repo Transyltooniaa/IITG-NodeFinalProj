@@ -1,7 +1,7 @@
 const Question = require('../models/question');
 const Answer = require('../models/answer');
 
-// Create a new question
+// Create a question
 const createQuestion = async (req, res) => {
     try {
         const question = new Question({
@@ -11,19 +11,27 @@ const createQuestion = async (req, res) => {
         await question.save();
         res.status(201).send(question);
     } catch (error) {
-        res.status(400).send(error);
+        res.status(400).send({ error: error.message });
     }
 };
 
 // Get all questions
 const getAllQuestions = async (req, res) => {
     try {
-        const questions = await Question.find().populate('user').populate('answers');
+        const questions = await Question.find()
+            .populate({
+                path: 'user',
+                select: 'username' // only select the 'username' field of the user
+            })
+            .populate('answers'); // Assuming answers already include necessary fields
+
         res.send(questions);
     } catch (error) {
         res.status(500).send(error);
     }
 };
+
+
 
 // Get a question by ID
 const getQuestionById = async (req, res) => {
@@ -87,11 +95,20 @@ const findQuestionByTag = async (req, res) => {
     }
 }
 
+const postQustion = async (req, res) => {
+    try {
+        res.render('postQuestion');
+    } catch (error) {
+        res.status
+    }
+}
+
 module.exports = {
     createQuestion,
     getAllQuestions,
     getQuestionById,
     updateQuestion,
     deleteQuestion,
-    findQuestionByTag
+    findQuestionByTag,
+    postQustion
 };
